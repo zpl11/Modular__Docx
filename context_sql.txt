@@ -1,0 +1,95 @@
+
+--- FILE: sql/init.sql ---
+/*
+ 基于Web的物品交易平台 - 数据库初始化脚本
+ 数据库建议命名为: item_trading_db
+*/
+
+CREATE DATABASE IF NOT EXISTS `item_trading_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+USE `item_trading_db`;
+
+-- 1. 用户表
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `username` VARCHAR(50) NOT NULL UNIQUE COMMENT '登录账号',
+  `password` VARCHAR(100) NOT NULL COMMENT '密码',
+  `nickname` VARCHAR(50) COMMENT '昵称',
+  `avatar` VARCHAR(255) COMMENT '头像URL',
+  `phone` VARCHAR(20) NOT NULL COMMENT '联系手机',
+  `wechat` VARCHAR(50) COMMENT '微信号',
+  `credit_score` INT DEFAULT 100 COMMENT '信用积分',
+  `role` TINYINT DEFAULT 0 COMMENT '0:普通用户, 1:管理员',
+  `status` TINYINT DEFAULT 0 COMMENT '0:正常, 1:封禁',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
+-- 2. 信用流水表
+CREATE TABLE IF NOT EXISTS `credit_log` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `user_id` BIGINT NOT NULL COMMENT '用户ID',
+  `change_amount` INT NOT NULL COMMENT '变动分数(正负)',
+  `reason` VARCHAR(255) COMMENT '变动原因',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `user`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='信用变动记录';
+
+-- 3. 分类表
+CREATE TABLE IF NOT EXISTS `category` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  `parent_id` INT DEFAULT 0,
+  `sort_order` INT DEFAULT 0,
+  `icon` VARCHAR(255),
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='分类表';
+
+-- 4. 商品表
+CREATE TABLE IF NOT EXISTS `item` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `seller_id` BIGINT NOT NULL,
+  `category_id` INT NOT NULL,
+  `title` VARCHAR(100) NOT NULL,
+  `description` TEXT,
+  `price` DECIMAL(10, 2) NOT NULL,
+  `images` TEXT COMMENT '图片列表,逗号分隔',
+  `trading_method` TINYINT DEFAULT 0 COMMENT '0:线下自提, 1:邮寄, 2:两者均可',
+  `location` VARCHAR(255) COMMENT '推荐交易地点',
+  `status` TINYINT DEFAULT 0 COMMENT '0:待审核, 1:挂售中, 2:已售出, 3:下架',
+  `view_count` INT DEFAULT 0,
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品表';
+
+-- 5. 订单表
+CREATE TABLE IF NOT EXISTS `order` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `order_sn` VARCHAR(64) NOT NULL UNIQUE,
+  `item_id` BIGINT NOT NULL,
+  `buyer_id` BIGINT NOT NULL,
+  `seller_id` BIGINT NOT NULL,
+  `price` DECIMAL(10, 2) NOT NULL,
+  `pay_status` TINYINT DEFAULT 0 COMMENT '0:待支付, 1:已支付(模拟)',
+  `order_status` TINYINT DEFAULT 0 COMMENT '0:交易进行中, 1:待评价, 2:已完成, 3:已取消',
+  `meeting_time` DATETIME COMMENT '约定见面时间',
+  `meeting_location` VARCHAR(255) COMMENT '约定见面地点',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
+
+-- 6. 评价表
+CREATE TABLE IF NOT EXISTS `comment` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `order_id` BIGINT NOT NULL COMMENT '订单ID',
+  `from_user_id` BIGINT NOT NULL COMMENT '评价人ID',
+  `to_user_id` BIGINT NOT NULL COMMENT '被评价人ID',
+  `rating` TINYINT DEFAULT 5 COMMENT '评分1-5',
+  `content` TEXT COMMENT '评价内容',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评价表';
+
+-- 7. 插入初始管理员数据 (账号: admin, 密码: admin)
+INSERT IGNORE INTO `user` (`username`, `password`, `nickname`, `phone`, `role`, `status`) 
+VALUES ('admin', 'admin', '系统管理员', '10086', 1, 0);
+

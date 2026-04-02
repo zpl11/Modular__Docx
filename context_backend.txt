@@ -1,0 +1,970 @@
+
+--- FILE: backend/src/main/java/com/example/itemtrading/ItemTradingApplication.java ---
+package com.example.itemtrading;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+@MapperScan("com.example.itemtrading.mapper")
+public class ItemTradingApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ItemTradingApplication.class, args);
+    }
+
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/mapper/CartMapper.java ---
+package com.example.itemtrading.mapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.itemtrading.entity.Cart;
+import org.apache.ibatis.annotations.Mapper;
+@Mapper
+public interface CartMapper extends BaseMapper<Cart> {
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/mapper/CategoryMapper.java ---
+package com.example.itemtrading.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.itemtrading.entity.Category;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface CategoryMapper extends BaseMapper<Category> {
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/mapper/CommentMapper.java ---
+package com.example.itemtrading.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.itemtrading.entity.Comment;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface CommentMapper extends BaseMapper<Comment> {
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/mapper/ItemMapper.java ---
+package com.example.itemtrading.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.itemtrading.entity.Item;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface ItemMapper extends BaseMapper<Item> {
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/mapper/MessageMapper.java ---
+package com.example.itemtrading.mapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.itemtrading.entity.Message;
+import org.apache.ibatis.annotations.Mapper;
+@Mapper
+public interface MessageMapper extends BaseMapper<Message> {
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/mapper/NoticeMapper.java ---
+package com.example.itemtrading.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.itemtrading.entity.Notice;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface NoticeMapper extends BaseMapper<Notice> {
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/mapper/OrderMapper.java ---
+package com.example.itemtrading.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.itemtrading.entity.Order;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface OrderMapper extends BaseMapper<Order> {
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/mapper/UserMapper.java ---
+package com.example.itemtrading.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.itemtrading.entity.User;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface UserMapper extends BaseMapper<User> {
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/Category.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("category")
+public class Category {
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    private String name;
+    private Integer parentId;
+    private Integer sortOrder;
+    private String icon;
+    private LocalDateTime createTime;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/Cart.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("cart")
+public class Cart {
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    private Long userId;
+    private Long itemId;
+    private Integer quantity;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime createTime;
+
+    @TableField(exist = false)
+    private String itemTitle;
+    @TableField(exist = false)
+    private String itemImages;
+    @TableField(exist = false)
+    private BigDecimal itemPrice;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/Comment.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("comment")
+public class Comment {
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private Long orderId;
+    private Long fromUserId;
+    private Long toUserId;
+    private Integer rating;
+    private String content;
+    private LocalDateTime createTime;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/CreditLog.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("credit_log")
+public class CreditLog {
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private Long userId;
+    private Integer changeAmount;
+    private String reason;
+    private LocalDateTime createTime;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/Item.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("item")
+public class Item {
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private Long sellerId;
+    private Integer categoryId;
+    private String title;
+    private String description;
+    private BigDecimal price;
+    private String images;
+    private Integer tradingMethod;
+    private String location;
+    private Integer status;
+    private Integer viewCount;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/Message.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("message")
+public class Message {
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    private Long fromUserId;
+    private Long toUserId;
+    private String content;
+    private Integer isRead; // 0=未读, 1=已读
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime createTime;
+
+    @TableField(exist = false)
+    private String fromUsername;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/Order.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("`order`")
+public class Order {
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private String orderSn;
+    private Long itemId;
+    private Long buyerId;
+    private Long sellerId;
+    private BigDecimal price;
+    private Integer payStatus;
+    private Integer orderStatus;
+    private LocalDateTime meetingTime;
+    private String meetingLocation;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+
+    @TableField(exist = false)
+    private String itemTitle;
+    @TableField(exist = false)
+    private String itemImages;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/Notice.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+@TableName("notice")
+public class Notice {
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    private String title;
+    private String content;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime createTime;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/entity/User.java ---
+package com.example.itemtrading.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("user")
+public class User {
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    private String username;
+    private String password;
+    private String nickname;
+    private String avatar;
+    private String phone;
+    private String wechat;
+    private Integer creditScore;
+    private Integer role;
+    private Integer status;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/CategoryController.java ---
+package com.example.itemtrading.controller;
+
+import com.example.itemtrading.common.Result;
+import com.example.itemtrading.entity.Category;
+import com.example.itemtrading.mapper.CategoryMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/category")
+public class CategoryController {
+
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+    @GetMapping("/list")
+    public Result<List<Category>> list() {
+        return Result.success(categoryMapper.selectList(null));
+    }
+
+    @PostMapping("/add")
+    public Result<String> add(@RequestBody Category category) {
+        categoryMapper.insert(category);
+        return Result.success("添加成功");
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Integer id) {
+        categoryMapper.deleteById(id);
+        return Result.success("删除成功");
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/CommentController.java ---
+package com.example.itemtrading.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.itemtrading.common.Result;
+import com.example.itemtrading.entity.Comment;
+import com.example.itemtrading.entity.User;
+import com.example.itemtrading.mapper.CommentMapper;
+import com.example.itemtrading.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/comment")
+public class CommentController {
+
+    @Autowired
+    private CommentMapper commentMapper;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @PostMapping("/add")
+    public Result<String> add(@RequestBody Comment comment) {
+        commentMapper.insert(comment);
+        // 更新被评价人信用分
+        User user = userMapper.selectById(comment.getToUserId());
+        if (user != null) {
+            int delta = comment.getRating() >= 4 ? 5 : (comment.getRating() <= 2 ? -10 : 0);
+            int newScore = Math.max(0, Math.min(200, user.getCreditScore() + delta));
+            user.setCreditScore(newScore);
+            userMapper.updateById(user);
+        }
+        return Result.success("评价成功");
+    }
+
+    @GetMapping("/list")
+    public Result<List<Comment>> list(@RequestParam Long toUserId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getToUserId, toUserId);
+        wrapper.orderByDesc(Comment::getCreateTime);
+        return Result.success(commentMapper.selectList(wrapper));
+    }
+
+    // 管理员获取所有差评（<=2星）
+    @GetMapping("/admin/bad")
+    public Result<List<Comment>> badList() {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.le(Comment::getRating, 2);
+        wrapper.orderByDesc(Comment::getCreateTime);
+        return Result.success(commentMapper.selectList(wrapper));
+    }
+
+    // 检查某个订单是否已评价
+    @GetMapping("/check")
+    public Result<Boolean> check(@RequestParam Long orderId, @RequestParam Long fromUserId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getOrderId, orderId).eq(Comment::getFromUserId, fromUserId);
+        return Result.success(commentMapper.selectCount(wrapper) > 0);
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/FileController.java ---
+package com.example.itemtrading.controller;
+
+import com.example.itemtrading.common.Result;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/file")
+public class FileController {
+
+    private static final String UPLOAD_DIR = "d:/code/毕设/work_04_基于web的物品交易平台/uploads/";
+
+    @PostMapping("/upload")
+    public Result<String> upload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return Result.error("文件为空");
+        }
+
+        // 确保上传目录存在
+        File dir = new File(UPLOAD_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String filename = UUID.randomUUID().toString() + extension;
+
+        try {
+            file.transferTo(new File(UPLOAD_DIR + filename));
+            // 返回访问路径 (后端已做静态映射)
+            return Result.success("/api/uploads/" + filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Result.error("文件上传失败");
+        }
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/CartController.java ---
+package com.example.itemtrading.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.itemtrading.common.Result;
+import com.example.itemtrading.entity.Cart;
+import com.example.itemtrading.entity.Item;
+import com.example.itemtrading.mapper.CartMapper;
+import com.example.itemtrading.mapper.ItemMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@RestController
+@RequestMapping("/cart")
+public class CartController {
+
+    @Autowired
+    private CartMapper cartMapper;
+
+    @Autowired
+    private ItemMapper itemMapper;
+
+    @GetMapping("/list")
+    public Result<List<Cart>> list(@RequestParam Long userId) {
+        LambdaQueryWrapper<Cart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Cart::getUserId, userId).orderByDesc(Cart::getCreateTime);
+        List<Cart> list = cartMapper.selectList(wrapper);
+        for (Cart c : list) {
+            Item item = itemMapper.selectById(c.getItemId());
+            if (item != null) {
+                c.setItemTitle(item.getTitle());
+                c.setItemImages(item.getImages());
+                c.setItemPrice(item.getPrice());
+            }
+        }
+        return Result.success(list);
+    }
+
+    @PostMapping("/add")
+    public Result<String> add(@RequestBody Cart cart) {
+        LambdaQueryWrapper<Cart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Cart::getUserId, cart.getUserId()).eq(Cart::getItemId, cart.getItemId());
+        if (cartMapper.selectCount(wrapper) > 0) {
+            return Result.success("已经在购物车中了");
+        }
+        cart.setCreateTime(LocalDateTime.now());
+        cart.setQuantity(1);
+        cartMapper.insert(cart);
+        return Result.success("添加购物车成功");
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Integer id) {
+        cartMapper.deleteById(id);
+        return Result.success("从购物车移除成功");
+    }
+    
+    @DeleteMapping("/clear/{userId}")
+    public Result<String> clear(@PathVariable Long userId) {
+        LambdaQueryWrapper<Cart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Cart::getUserId, userId);
+        cartMapper.delete(wrapper);
+        return Result.success("购物车已清空");
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/ItemController.java ---
+package com.example.itemtrading.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.itemtrading.common.Result;
+import com.example.itemtrading.entity.Item;
+import com.example.itemtrading.mapper.ItemMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/item")
+public class ItemController {
+
+    @Autowired
+    private ItemMapper itemMapper;
+
+    @GetMapping("/list")
+    public Result<List<Item>> list(
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) Long excludeUserId,
+            @RequestParam(required = false) Long sellerId,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer categoryId) {
+        LambdaQueryWrapper<Item> wrapper = new LambdaQueryWrapper<>();
+        if (status != null) {
+            wrapper.eq(Item::getStatus, status);
+        }
+        if (excludeUserId != null) {
+            wrapper.ne(Item::getSellerId, excludeUserId);
+        }
+        if (sellerId != null) {
+            wrapper.eq(Item::getSellerId, sellerId);
+        }
+        if (keyword != null && !keyword.isEmpty()) {
+            wrapper.like(Item::getTitle, keyword).or().like(Item::getDescription, keyword);
+        }
+        if (categoryId != null) {
+            wrapper.eq(Item::getCategoryId, categoryId);
+        }
+        wrapper.orderByDesc(Item::getCreateTime);
+        return Result.success(itemMapper.selectList(wrapper));
+    }
+
+    @PostMapping("/publish")
+    public Result<String> publish(@RequestBody Item item) {
+        item.setStatus(0); // 默认待审核
+        itemMapper.insert(item);
+        return Result.success("发布成功，等待审核");
+    }
+
+    @PutMapping("/audit/{id}/{status}")
+    public Result<String> audit(@PathVariable Long id, @PathVariable Integer status) {
+        Item item = new Item();
+        item.setId(id);
+        item.setStatus(status);
+        itemMapper.updateById(item);
+        return Result.success("操作成功");
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id) {
+        itemMapper.deleteById(id);
+        return Result.success("删除成功");
+    }
+
+    @GetMapping("/{id}")
+    public Result<Item> getById(@PathVariable Long id) {
+        return Result.success(itemMapper.selectById(id));
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/MessageController.java ---
+package com.example.itemtrading.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.itemtrading.common.Result;
+import com.example.itemtrading.entity.Message;
+import com.example.itemtrading.entity.User;
+import com.example.itemtrading.mapper.MessageMapper;
+import com.example.itemtrading.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/message")
+public class MessageController {
+
+    @Autowired
+    private MessageMapper messageMapper;
+    @Autowired
+    private UserMapper userMapper;
+
+    @GetMapping("/history")
+    public Result<List<Message>> history(@RequestParam Long userId1, @RequestParam Long userId2, @RequestParam(required = false) String keyword) {
+        LambdaQueryWrapper<Message> wrapper = new LambdaQueryWrapper<>();
+        wrapper.and(w -> w.eq(Message::getFromUserId, userId1).eq(Message::getToUserId, userId2)
+                .or()
+                .eq(Message::getFromUserId, userId2).eq(Message::getToUserId, userId1));
+                
+        if (StringUtils.hasText(keyword)) {
+            wrapper.like(Message::getContent, keyword);
+        }
+        wrapper.orderByAsc(Message::getCreateTime);
+        
+        List<Message> list = messageMapper.selectList(wrapper);
+        for (Message m : list) {
+            User u = userMapper.selectById(m.getFromUserId());
+            if (u != null) m.setFromUsername(u.getNickname() != null ? u.getNickname() : u.getUsername());
+        }
+        return Result.success(list);
+    }
+    
+    // 获取有聊过天的联系人列表
+    @GetMapping("/contacts")
+    public Result<List<User>> contacts(@RequestParam Long userId) {
+        LambdaQueryWrapper<Message> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Message::getFromUserId, userId).or().eq(Message::getToUserId, userId);
+        List<Message> msgs = messageMapper.selectList(wrapper);
+        List<Long> contactIds = msgs.stream()
+            .map(m -> m.getFromUserId().equals(userId) ? m.getToUserId() : m.getFromUserId())
+            .distinct().collect(Collectors.toList());
+        if (contactIds.isEmpty()) return Result.success(List.of());
+        List<User> list = userMapper.selectBatchIds(contactIds);
+        return Result.success(list);
+    }
+
+    @PostMapping("/send")
+    public Result<String> send(@RequestBody Message message) {
+        message.setCreateTime(LocalDateTime.now());
+        message.setIsRead(0);
+        messageMapper.insert(message);
+        return Result.success("发送成功");
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/UserController.java ---
+package com.example.itemtrading.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.itemtrading.common.Result;
+import com.example.itemtrading.entity.User;
+import com.example.itemtrading.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @PostMapping("/register")
+    public Result<String> register(@RequestBody User user) {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUsername, user.getUsername());
+        if (userMapper.selectCount(wrapper) > 0) {
+            return Result.error("用户名已存在");
+        }
+        user.setCreditScore(100);
+        user.setStatus(0);
+        user.setRole(0);
+        userMapper.insert(user);
+        return Result.success("注册成功");
+    }
+
+    @PostMapping("/login")
+    public Result<User> login(@RequestBody User loginUser) {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUsername, loginUser.getUsername())
+               .eq(User::getPassword, loginUser.getPassword());
+        User user = userMapper.selectOne(wrapper);
+        if (user == null) {
+            return Result.error("账号或密码错误");
+        }
+        if (user.getStatus() == 1) {
+            return Result.error("账号已被封禁");
+        }
+        return Result.success(user);
+    }
+
+    @GetMapping("/list")
+    public Result<List<User>> list() {
+        return Result.success(userMapper.selectList(null));
+    }
+
+    @GetMapping("/{id}")
+    public Result<User> getById(@PathVariable Long id) {
+        return Result.success(userMapper.selectById(id));
+    }
+
+    @PutMapping("/update")
+    public Result<String> update(@RequestBody User user) {
+        userMapper.updateById(user);
+        return Result.success("更新成功");
+    }
+
+    @PutMapping("/ban/{id}")
+    public Result<String> ban(@PathVariable Long id) {
+        User user = userMapper.selectById(id);
+        if (user == null) return Result.error("用户不存在");
+        user.setStatus(user.getStatus() == 0 ? 1 : 0);
+        userMapper.updateById(user);
+        return Result.success(user.getStatus() == 1 ? "封禁成功" : "解封成功");
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/common/Result.java ---
+package com.example.itemtrading.common;
+
+import lombok.Data;
+
+@Data
+public class Result<T> {
+    private Integer code;
+    private String message;
+    private T data;
+
+    public static <T> Result<T> success(T data) {
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage("success");
+        result.setData(data);
+        return result;
+    }
+
+    public static <T> Result<T> error(String message) {
+        Result<T> result = new Result<>();
+        result.setCode(500);
+        result.setMessage(message);
+        return result;
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/OrderController.java ---
+package com.example.itemtrading.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.itemtrading.common.Result;
+import com.example.itemtrading.entity.Item;
+import com.example.itemtrading.entity.Order;
+import com.example.itemtrading.mapper.ItemMapper;
+import com.example.itemtrading.mapper.OrderMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/order")
+public class OrderController {
+
+    @Autowired
+    private OrderMapper orderMapper;
+
+    @Autowired
+    private ItemMapper itemMapper;
+
+    @GetMapping("/list")
+    public Result<List<Order>> list(@RequestParam(required = false) Long buyerId, 
+                                     @RequestParam(required = false) Long sellerId) {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        if (buyerId != null) {
+            wrapper.eq(Order::getBuyerId, buyerId);
+        }
+        if (sellerId != null) {
+            wrapper.eq(Order::getSellerId, sellerId);
+        }
+        List<Order> orders = orderMapper.selectList(wrapper);
+        for (Order order : orders) {
+            Item item = itemMapper.selectById(order.getItemId());
+            if (item != null) {
+                order.setItemTitle(item.getTitle());
+                order.setItemImages(item.getImages());
+            }
+        }
+        return Result.success(orders);
+    }
+
+    @PostMapping("/create")
+    public Result<String> create(@RequestBody Order order) {
+        order.setOrderSn(UUID.randomUUID().toString().replace("-", ""));
+        order.setPayStatus(0);
+        order.setOrderStatus(0);
+        orderMapper.insert(order);
+        return Result.success("订单创建成功");
+    }
+
+    @PutMapping("/pay/{id}")
+    public Result<String> pay(@PathVariable Long id) {
+        Order order = new Order();
+        order.setId(id);
+        order.setPayStatus(1);
+        order.setOrderStatus(1);
+        orderMapper.updateById(order);
+        return Result.success("模拟支付成功");
+    }
+
+    @PutMapping("/complete/{id}")
+    public Result<String> complete(@PathVariable Long id) {
+        Order order = new Order();
+        order.setId(id);
+        order.setOrderStatus(2);
+        orderMapper.updateById(order);
+        return Result.success("订单已完成");
+    }
+
+    @PutMapping("/cancel/{id}")
+    public Result<String> cancel(@PathVariable Long id) {
+        Order order = new Order();
+        order.setId(id);
+        order.setOrderStatus(3);
+        orderMapper.updateById(order);
+        return Result.success("订单已取消");
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/controller/NoticeController.java ---
+package com.example.itemtrading.controller;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.itemtrading.common.Result;
+import com.example.itemtrading.entity.Notice;
+import com.example.itemtrading.mapper.NoticeMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@RestController
+@RequestMapping("/notice")
+public class NoticeController {
+
+    @Autowired
+    private NoticeMapper noticeMapper;
+
+    @GetMapping("/list")
+    public Result<List<Notice>> list() {
+        // 按照创建时间倒序查询公告
+        LambdaQueryWrapper<Notice> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(Notice::getCreateTime);
+        return Result.success(noticeMapper.selectList(wrapper));
+    }
+
+    @PostMapping("/add")
+    public Result<String> add(@RequestBody Notice notice) {
+        if (notice.getCreateTime() == null) {
+            notice.setCreateTime(LocalDateTime.now());
+        }
+        noticeMapper.insert(notice);
+        return Result.success("公告发布成功");
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Integer id) {
+        noticeMapper.deleteById(id);
+        return Result.success("删除成功");
+    }
+}
+
+
+--- FILE: backend/src/main/java/com/example/itemtrading/config/WebConfig.java ---
+package com.example.itemtrading.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 设置静态资源映射，让浏览器可以访问上传的图片
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:d:/code/毕设/work_04_基于web的物品交易平台/uploads/");
+    }
+}
+
