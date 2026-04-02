@@ -42,21 +42,89 @@ const TYPE_MAP = {
 // --- 状态管理 (Zustand) ---
 const useThesisStore = create((set) => ({
   chapters: [
-    { id: 'ch-1', title: '第1章 绪论', blocks: [] },
-    { id: 'ch-2', title: '第2章 相关技术', blocks: [] },
-    { id: 'ch-3', title: '第3章 系统设计', blocks: [] },
+    {
+      id: 'ch-1', title: '摘要 (Abstract)', blocks: [
+        { id: 'blk-1-1', type: 'text-block', title: '中文摘要', content: '', prompt: '在这里输入中文摘要...', isGenerating: false },
+        { id: 'blk-1-2', type: 'text-block', title: 'Abstract (English)', content: '', prompt: 'Input English abstract here...', isGenerating: false }
+      ]
+    },
+    {
+      id: 'ch-2', title: '第1章 绪论', blocks: [
+        { id: 'blk-2-1', type: 'text-block', title: '1.1 研究背景及意义', content: '', prompt: '研究背景', isGenerating: false },
+        { id: 'blk-2-2', type: 'text-block', title: '1.2 国内外研究现状', content: '', prompt: '现状分析', isGenerating: false },
+        { id: 'blk-2-3', type: 'text-block', title: '1.3 论文主要研究内容与目标', content: '', prompt: '核心工作', isGenerating: false },
+        { id: 'blk-2-4', type: 'text-block', title: '1.4 论文组织结构', content: '', prompt: '结构安排', isGenerating: false }
+      ]
+    },
+    {
+      id: 'ch-3', title: '第2章 相关技术概述', blocks: [
+        { id: 'blk-3-1', type: 'text-block', title: '2.1 前端开发框架 (React/Vite)', content: '', prompt: '前端技术栈', isGenerating: false },
+        { id: 'blk-3-2', type: 'text-block', title: '2.2 UI 样式系统 (Tailwind CSS)', content: '', prompt: '样式系统', isGenerating: false },
+        { id: 'blk-3-3', type: 'text-block', title: '2.3 核心处理引擎 (Docx.js/Mammoth)', content: '', prompt: '文档引擎', isGenerating: false },
+        { id: 'blk-3-4', type: 'text-block', title: '2.4 辅助开发环境 with 工具', content: '', prompt: '环境工具', isGenerating: false }
+      ]
+    },
+    {
+      id: 'ch-4', title: '第3章 系统需求分析', blocks: [
+        { id: 'blk-4-1', type: 'text-block', title: '3.1 系统可行性分析', content: '', prompt: '可行性分析', isGenerating: false },
+        { id: 'blk-4-2', type: 'text-block', title: '3.2 业务流程分析 (泳道图/流程图)', content: '', prompt: '流程分析', isGenerating: false },
+        { id: 'blk-4-3', type: 'text-block', title: '3.3 系统功能需求 (用例图描述)', content: '', prompt: '功能需求', isGenerating: false },
+        { id: 'blk-4-4', type: 'text-block', title: '3.4 非功能性需求分析', content: '', prompt: '非功能需求', isGenerating: false }
+      ]
+    },
+    {
+      id: 'ch-5', title: '第4章 系统设计', blocks: [
+        { id: 'blk-5-1', type: 'text-block', title: '4.1 系统层级架构设计', content: '', prompt: '层级架构', isGenerating: false },
+        { id: 'blk-5-2', type: 'text-block', title: '4.2 核心模块划分与功能定义', content: '', prompt: '模块划分', isGenerating: false },
+        { id: 'blk-5-3', type: 'text-block', title: '4.3 数据库模型与表结构设计 (E-R图)', content: '', prompt: '数据库设计', isGenerating: false },
+        { id: 'blk-5-4', type: 'text-block', title: '4.4 系统核心交互逻辑设计 (时序图)', content: '', prompt: '逻辑设计', isGenerating: false }
+      ]
+    },
+    {
+      id: 'ch-6', title: '第5章 系统实现', blocks: [
+        { id: 'blk-6-1', type: 'text-block', title: '5.1 开发环境搭建与组件封装', content: '', prompt: '环境搭建', isGenerating: false },
+        { id: 'blk-6-2', type: 'text-block', title: '5.2 核心业务逻辑实现 (代码实现)', content: '', prompt: '业务逻辑', isGenerating: false },
+        { id: 'blk-6-3', type: 'text-block', title: '5.3 系统主要功能界面展示', content: '', prompt: '界面实现', isGenerating: false }
+      ]
+    },
+    {
+      id: 'ch-7', title: '第6章 系统测试', blocks: [
+        { id: 'blk-7-1', type: 'text-block', title: '6.1 测试环境配置与工具准备', content: '', prompt: '测试环境', isGenerating: false },
+        { id: 'blk-7-2', type: 'text-block', title: '6.2 功能性测试用例与分析', content: '', prompt: '功能测试', isGenerating: false },
+        { id: 'blk-7-3', type: 'text-block', title: '6.3 系统性能压测与优化总结', content: '', prompt: '性能测试', isGenerating: false }
+      ]
+    },
+    {
+      id: 'ch-8', title: '第7章 总结与展望', blocks: [
+        { id: 'blk-8-1', type: 'text-block', title: '7.1 本文工作总结', content: '', prompt: '总结', isGenerating: false },
+        { id: 'blk-8-2', type: 'text-block', title: '7.2 课题不足与未来优化建议', content: '', prompt: '展望', isGenerating: false }
+      ]
+    },
   ],
   addChapter: (title) => set((state) => ({
     chapters: [...state.chapters, { id: `ch-${Date.now()}`, title, blocks: [] }]
+  })),
+  updateChapter: (id, title) => set((state) => ({
+    chapters: state.chapters.map(ch => ch.id === id ? { ...ch, title } : ch)
   })),
   removeChapter: (id) => set((state) => ({
     chapters: state.chapters.filter(ch => ch.id !== id)
   })),
   setChapters: (chapters) => set({ chapters }),
-  addBlock: (chapterId, blockType, prompt = "", content = "") => set((state) => ({
+  addBlock: (chapterId, blockType, prompt = "", content = "", title = "") => set((state) => ({
     chapters: state.chapters.map(ch =>
       ch.id === chapterId
-        ? { ...ch, blocks: [...ch.blocks, { id: `blk-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, type: blockType, prompt, content, isGenerating: false }] }
+        ? {
+          ...ch,
+          blocks: [...ch.blocks, {
+            id: `blk-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
+            type: blockType,
+            prompt,
+            content,
+            title: title || TYPE_MAP[blockType] || '新建块',
+            isGenerating: false
+          }]
+        }
         : ch
     )
   })),
@@ -217,10 +285,15 @@ export default function App() {
     chapters.forEach((ch, idx) => {
       children.push(new Paragraph({ text: ch.title, heading: HeadingLevel.HEADING_1, spacing: { before: 400, after: 200 } }));
       ch.blocks.forEach(blk => {
+        // 如果有标题，导出为二级标题
+        if (blk.title) {
+          children.push(new Paragraph({ text: blk.title, heading: HeadingLevel.HEADING_2, spacing: { before: 240, after: 120 } }));
+        }
+
         if (blk.type === 'text-block') {
           children.push(new Paragraph({ text: blk.content || "(待生成内容)", spacing: { after: 120 } }));
         } else if (blk.type === 'table') {
-          children.push(new Paragraph({ text: `表 ${idx + 1}-X：${blk.content || '数据统计表'}`, alignment: 'center' }));
+          children.push(new Paragraph({ text: `表 ${idx + 1}-X：${blk.title || blk.content || '数据统计表'}`, alignment: 'center' }));
           children.push(new Table({
             width: { size: 100, type: 'pct' }, rows: [
               new TableRow({ children: [new TableCell({ children: [new Paragraph("测试项")] }), new TableCell({ children: [new Paragraph("结果")] })] }),
@@ -228,7 +301,7 @@ export default function App() {
             ]
           }));
         } else {
-          children.push(new Paragraph({ text: `图 ${idx + 1}-X：${blk.content || TYPE_MAP[blk.type]}`, alignment: 'center' }));
+          children.push(new Paragraph({ text: `图 ${idx + 1}-X：${blk.title || blk.content || TYPE_MAP[blk.type]}`, alignment: 'center' }));
         }
       });
     });
@@ -300,8 +373,12 @@ export default function App() {
               {chapters.map((ch, chIdx) => (
                 <div key={ch.id}>
                   <div className="flex justify-between items-center mb-2 px-1">
-                    <h3 className="text-xs font-black text-slate-800">{ch.title}</h3>
-                    <button onClick={() => removeChapter(ch.id)} className="text-slate-300 hover:text-red-500"><Trash2 size={12} /></button>
+                    <input
+                      className="text-xs font-black text-slate-800 bg-transparent border-none focus:ring-1 focus:ring-blue-100 rounded px-1 outline-none w-full hover:bg-slate-50 transition-colors"
+                      value={ch.title}
+                      onChange={(e) => updateChapter(ch.id, e.target.value)}
+                    />
+                    <button onClick={() => removeChapter(ch.id)} className="text-slate-300 hover:text-red-500 shrink-0 ml-2"><Trash2 size={12} /></button>
                   </div>
                   <Droppable droppableId={ch.id}>
                     {(provided, snapshot) => (
@@ -312,8 +389,13 @@ export default function App() {
                               <div ref={provided.innerRef} {...provided.draggableProps} className={`bg-slate-50 border rounded-xl p-3 shadow-sm hover:border-blue-300 transition-all ${snapshot.isDragging ? 'shadow-xl z-50 ring-2 ring-blue-500' : 'border-slate-100'}`}>
                                 <div className="flex items-center justify-between mb-2">
                                   <div {...provided.dragHandleProps} className="text-slate-300 hover:text-slate-400"><GripVertical size={14} /></div>
-                                  <span className="text-[8px] font-black text-slate-400 uppercase">{TYPE_MAP[blk.type]}</span>
-                                  <button onClick={() => removeBlock(ch.id, blk.id)} className="text-slate-300 hover:text-red-400"><Trash2 size={12} /></button>
+                                  <input
+                                    className="text-[10px] font-bold text-blue-600 bg-white/50 border border-transparent focus:border-blue-200 focus:ring-1 focus:ring-blue-100 rounded px-1.5 py-0.5 outline-none text-right placeholder-slate-300 transition-all hover:border-slate-200"
+                                    placeholder="标题..."
+                                    value={blk.title || ''}
+                                    onChange={(e) => updateBlock(ch.id, blk.id, { title: e.target.value })}
+                                  />
+                                  <button onClick={() => removeBlock(ch.id, blk.id)} className="text-slate-300 hover:text-red-400 ml-2"><Trash2 size={12} /></button>
                                 </div>
                                 <input type="text" placeholder="输入关键词 (如：需求分析)..." className="w-full text-[11px] p-2 border border-slate-100 rounded-lg outline-none focus:ring-1 focus:ring-blue-300" onKeyDown={(e) => e.key === 'Enter' && handleGenerate(ch.id, blk.id, e.target.value, blk.type)} />
                                 {blk.isGenerating && <div className="text-[9px] text-blue-500 animate-pulse mt-2 flex items-center"><Activity size={10} className="mr-1 shadow-sm" />生成中...</div>}
@@ -342,6 +424,7 @@ export default function App() {
                     <div className="space-y-6">
                       {ch.blocks.map(blk => (
                         <div key={blk.id} className="animate-in fade-in slide-in-from-bottom-2">
+                          {blk.title && <h3 className="text-lg font-bold text-slate-800 mb-2">{blk.title}</h3>}
                           {blk.type === 'text-block' ? (
                             <p className={`text-slate-700 leading-relaxed text-justify indent-8 ${!blk.content ? 'opacity-20 italic text-sm' : ''}`}>{blk.content || '请输入指令关键词生产核心文本内容...'}</p>
                           ) : blk.type === 'table' ? (
