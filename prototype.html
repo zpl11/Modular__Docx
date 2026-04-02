@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>论文组件化生产原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .drag-over {
+            border: 2px dashed #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .word-preview {
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.05);
+            min-height: 29.7cm;
+            /* A4 aspect ratio approx */
+            width: 21cm;
+            margin: 0 auto;
+            background: white;
+            padding: 2.54cm;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+            background: #ebf5ff !important;
+            border: 2px dashed #3b82f6 !important;
+        }
+    </style>
+    <!-- Add SortableJS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="h-14 border-b bg-white flex items-center justify-between px-6 z-10 shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">P</div>
+            <h1 class="text-lg font-semibold text-gray-800">ThesisFlow <span
+                    class="text-xs font-normal text-gray-400 font-mono">v0.2-pro</span></h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button class="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">导出为
+                Word</button>
+            <div class="w-8 h-8 rounded-full bg-gray-200 border"></div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden">
+        <!-- Left Sidebar: Elements -->
+        <aside class="w-64 border-r bg-white flex flex-col shrink-0">
+            <div class="p-4 border-b">
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider">内容组件库</h2>
+            </div>
+            <div id="component-library" class="p-4 space-y-4 overflow-y-auto">
+                <!-- Text Components -->
+                <div>
+                    <h3 class="text-[10px] font-bold text-gray-400 mb-2 uppercase">文字模块</h3>
+                    <div draggable="true" data-type="text-block"
+                        class="p-2.5 border rounded-lg hover:border-blue-400 hover:shadow-sm cursor-move bg-white transition group">
+                        <div class="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h7"></path>
+                            </svg>
+                            <span>正文文本块</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CS Specific Diagrams -->
+                <div class="space-y-2">
+                    <h3 class="text-[10px] font-bold text-gray-400 mb-2 uppercase">计算机专业图表</h3>
+                    <div draggable="true" data-type="diag-arch"
+                        class="p-2 border rounded-lg hover:border-blue-400 cursor-move bg-white transition flex items-center space-x-2 text-xs">
+                        <span
+                            class="w-6 h-6 bg-orange-50 text-orange-500 rounded flex items-center justify-center font-bold text-[10px]">架构</span>
+                        <span class="text-gray-600">系统架构图</span>
+                    </div>
+                    <div draggable="true" data-type="diag-flow"
+                        class="p-2 border rounded-lg hover:border-blue-400 cursor-move bg-white transition flex items-center space-x-2 text-xs">
+                        <span
+                            class="w-6 h-6 bg-cyan-50 text-cyan-500 rounded flex items-center justify-center font-bold text-[10px]">流程</span>
+                        <span class="text-gray-600">业务流程图</span>
+                    </div>
+                    <div draggable="true" data-type="diag-er"
+                        class="p-2 border rounded-lg hover:border-blue-400 cursor-move bg-white transition flex items-center space-x-2 text-xs">
+                        <span
+                            class="w-6 h-6 bg-rose-50 text-rose-500 rounded flex items-center justify-center font-bold text-[10px]">ER</span>
+                        <span class="text-gray-600">E-R 数据库图</span>
+                    </div>
+                    <div draggable="true" data-type="diag-seq"
+                        class="p-2 border rounded-lg hover:border-blue-400 cursor-move bg-white transition flex items-center space-x-2 text-xs">
+                        <span
+                            class="w-6 h-6 bg-indigo-50 text-indigo-500 rounded flex items-center justify-center font-bold text-[10px]">时序</span>
+                        <span class="text-gray-600">系统时序图</span>
+                    </div>
+                    <div draggable="true" data-type="diag-ui"
+                        class="p-2 border rounded-lg hover:border-blue-400 cursor-move bg-white transition flex items-center space-x-2 text-xs">
+                        <span
+                            class="w-6 h-6 bg-emerald-50 text-emerald-500 rounded flex items-center justify-center font-bold text-[10px]">UI</span>
+                        <span class="text-gray-600">原型界面展示</span>
+                    </div>
+                </div>
+
+                <!-- Tables -->
+                <div>
+                    <h3 class="text-[10px] font-bold text-gray-400 mb-2 uppercase">数据表格</h3>
+                    <div draggable="true" data-type="table-standard"
+                        class="p-2.5 border rounded-lg hover:border-green-400 cursor-move bg-white transition group">
+                        <div class="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                            <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+                                </path>
+                            </svg>
+                            <span>标准统计表</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Middle Sidebar: Directory Skeleton -->
+        <aside class="w-96 border-r bg-gray-50 flex flex-col shrink-0 overflow-hidden">
+            <div class="p-4 border-b bg-white flex justify-between items-center">
+                <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider">论文目录骨架</h2>
+                <button onclick="showAddChapterModal()" class="p-1 hover:bg-gray-100 rounded text-blue-600 transition"
+                    title="新增章节">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- New Chapter Input (Hidden by default) -->
+            <div id="add-chapter-ui" class="hidden p-4 bg-white border-b animate-in slide-in-from-top duration-200">
+                <input id="new-chapter-name" type="text" placeholder="输入章节名称..."
+                    class="w-full text-sm p-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-400 mb-2">
+                <div class="flex space-x-2">
+                    <button onclick="addChapter()"
+                        class="flex-1 text-xs bg-blue-600 text-white p-2 rounded hover:bg-blue-700">确定</button>
+                    <button onclick="hideAddChapterModal()"
+                        class="flex-1 text-xs bg-gray-100 text-gray-600 p-2 rounded hover:bg-gray-200">取消</button>
+                </div>
+            </div>
+
+            <div id="skeleton-list" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Initial chapters -->
+                <div class="skeleton-section" data-id="1" data-chapter="摘要">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-gray-900 leading-none">第一章 摘要</span>
+                    </div>
+                    <div
+                        class="drop-zone min-h-[60px] border border-dashed border-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-400 bg-gray-50 transition-all p-2 flex-col space-y-2">
+                        <div class="empty-placeholder italic pointer-events-none">拖动组件到此处</div>
+                    </div>
+                </div>
+
+                <div class="skeleton-section" data-id="2" data-chapter="绪论">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-gray-900 leading-none">第二章 绪论</span>
+                    </div>
+                    <div
+                        class="drop-zone min-h-[60px] border border-dashed border-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-400 bg-gray-50 transition-all p-2 flex-col space-y-2">
+                        <div class="empty-placeholder italic pointer-events-none">拖动组件到此处</div>
+                    </div>
+                </div>
+
+                <div class="skeleton-section" data-id="3" data-chapter="相关技术">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-gray-900 leading-none">第三章 相关技术</span>
+                    </div>
+                    <div
+                        class="drop-zone min-h-[60px] border border-dashed border-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-400 bg-gray-50 transition-all p-2 flex-col space-y-2">
+                        <div class="empty-placeholder italic pointer-events-none">拖动组件到此处</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right: Real-time Word Preview -->
+        <section class="flex-1 bg-gray-200 overflow-y-auto p-12 scroll-smooth">
+            <div class="word-preview shadow-2xl rounded-sm">
+                <div id="word-content" class="prose prose-slate max-w-none">
+                    <h1 class="text-center text-2xl font-bold mb-8">论文题目预览</h1>
+                    <div id="preview-container" class="space-y-8">
+                        <!-- Preview sections will be rendered here dynamically -->
+                        <div id="preview-1" class="preview-section">
+                            <h2 class="text-xl font-bold border-b pb-2 mb-4">第一章 摘要</h2>
+                            <div class="preview-body space-y-6"></div>
+                        </div>
+                        <div id="preview-2" class="preview-section">
+                            <h2 class="text-xl font-bold border-b pb-2 mb-4">第二章 绪论</h2>
+                            <div class="preview-body space-y-6"></div>
+                        </div>
+                        <div id="preview-3" class="preview-section">
+                            <h2 class="text-xl font-bold border-b pb-2 mb-4">第三章 相关技术</h2>
+                            <div class="preview-body space-y-6"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let chapterCount = 3;
+        let blockIdCounter = 0;
+
+        const TYPE_MAP = {
+            'text-block': '正文文本块',
+            'diag-arch': '系统架构图',
+            'diag-flow': '业务流程图',
+            'diag-er': 'E-R 数据库设计图',
+            'diag-seq': '系统时序图',
+            'diag-ui': '原型界面展示图',
+            'table-standard': '统计表格'
+        };
+
+        // Initialize Sortable for original chapters
+        document.querySelectorAll('.drop-zone').forEach(el => initSortable(el));
+
+        // Initialize Drag from library
+        document.getElementById('component-library').addEventListener('dragstart', function (ev) {
+            if (ev.target.dataset.type) {
+                ev.dataTransfer.setData("type", ev.target.dataset.type);
+            }
+        });
+
+        // Initialize drop zones for dragover
+        document.addEventListener('dragover', function (ev) {
+            if (ev.target.closest('.drop-zone')) {
+                ev.preventDefault();
+                ev.target.closest('.drop-zone').classList.add('drag-over');
+            }
+        });
+
+        document.addEventListener('dragleave', function (ev) {
+            if (ev.target.closest('.drop-zone')) {
+                ev.target.closest('.drop-zone').classList.remove('drag-over');
+            }
+        });
+
+        document.addEventListener('drop', function (ev) {
+            const dropZone = ev.target.closest('.drop-zone');
+            if (dropZone) {
+                ev.preventDefault();
+                dropZone.classList.remove('drag-over');
+                const type = ev.dataTransfer.getData("type");
+                if (type) {
+                    addBlockToChapter(dropZone, type);
+                }
+            }
+        });
+
+        function initSortable(el) {
+            new Sortable(el, {
+                group: 'nested',
+                animation: 150,
+                fallbackOnBody: true,
+                swapThreshold: 0.65,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    syncAllPreviews();
+                }
+            });
+        }
+
+        function addBlockToChapter(dropZone, type) {
+            const section = dropZone.closest('.skeleton-section');
+            const chapterId = section.dataset.id;
+            const blockId = ++blockIdCounter;
+
+            // Remove placeholder
+            const placeholder = dropZone.querySelector('.empty-placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+
+            const block = document.createElement('div');
+            block.className = "w-full p-3 bg-white border border-blue-200 rounded shadow-sm relative group mb-2 cursor-grab active:cursor-grabbing";
+            block.dataset.blockId = blockId;
+            block.dataset.type = type;
+
+            const typeLabel = TYPE_MAP[type] || '组件';
+            const isText = type === 'text-block';
+
+            block.innerHTML = `
+                <div class="flex flex-col space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] ${isText ? 'text-blue-500' : 'text-orange-500'} font-bold uppercase tracking-tighter">${typeLabel}</span>
+                        <button onclick="removeBlock(this, '${chapterId}')" class="text-gray-300 hover:text-red-500 transition">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <input type="text" placeholder="${isText ? '输入生成指令...' : '输入图表描述 (如：登录模块逻辑)'}" 
+                           class="text-xs p-2 border rounded focus:ring-1 focus:ring-blue-400 outline-none w-full"
+                           onkeydown="if(event.key==='Enter') generateContent(this, '${chapterId}', ${blockId})">
+                </div>
+            `;
+
+            dropZone.appendChild(block);
+            syncAllPreviews();
+        }
+
+        function removeBlock(btn, chapterId) {
+            const block = btn.closest('[data-block-id]');
+            const dropZone = block.parentElement;
+            block.remove();
+
+            if (dropZone.querySelectorAll('[data-block-id]').length === 0) {
+                const placeholder = dropZone.querySelector('.empty-placeholder');
+                if (placeholder) placeholder.style.display = 'block';
+            }
+            syncAllPreviews();
+        }
+
+        async function generateContent(input, chapterId, blockId) {
+            const prompt = input.value;
+            const container = input.parentElement;
+            const section = document.querySelector(`.skeleton-section[data-id="${chapterId}"]`);
+            const chapterName = section.dataset.chapter;
+            const block = input.closest('[data-block-id]');
+            const type = block.dataset.type;
+
+            input.disabled = true;
+            input.value = "正在处理中...";
+
+            setTimeout(() => {
+                if (type === 'text-block') {
+                    block.dataset.generatedContent = `【智能生成结果】针对“${chapterName}”章节关于“${prompt}”的描述：自上世纪90年代以来，软件工程领域经历了从结构化开发到组件化开发的重大转型。组件化开发不仅提高了代码的复用性，更在复杂系统构建中展现了卓越的解耦优势。我们的系统通过这种原子化的模块设计，确保了在“${prompt}”方面的技术严谨性。`;
+                } else {
+                    block.dataset.caption = prompt || TYPE_MAP[type];
+                }
+
+                input.value = prompt;
+                input.disabled = false;
+
+                if (!container.querySelector('.status-tag')) {
+                    const tag = document.createElement('div');
+                    tag.className = "status-tag mt-2 p-1 bg-green-50 text-green-600 text-[10px] rounded border border-green-200 inline-block";
+                    tag.innerText = "✓ 已同步";
+                    container.appendChild(tag);
+                }
+
+                syncAllPreviews();
+            }, 500);
+        }
+
+        function syncAllPreviews() {
+            let figureCounter = 1;
+            let tableCounter = 1;
+
+            document.querySelectorAll('.skeleton-section').forEach(section => {
+                const chapterId = section.dataset.id;
+                const dropZone = section.querySelector('.drop-zone');
+                const previewBody = document.querySelector(`#preview-${chapterId} .preview-body`);
+                if (!previewBody) return;
+
+                previewBody.innerHTML = '';
+                const blocks = dropZone.querySelectorAll('[data-block-id]');
+
+                if (blocks.length === 0) {
+                    previewBody.innerHTML = '<div class="opacity-30 italic text-sm text-gray-400">暂无内容，请从左侧拖入组件</div>';
+                    return;
+                }
+
+                blocks.forEach(block => {
+                    const type = block.dataset.type;
+                    const content = block.dataset.generatedContent;
+                    const customCaption = block.dataset.caption;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "flex flex-col items-center space-y-3";
+
+                    if (type === 'text-block') {
+                        wrapper.className = "text-gray-700 leading-relaxed text-justify";
+                        wrapper.innerText = content || "(待生成内容...)";
+                    } else if (type.startsWith('diag-')) {
+                        // Drawing/Figure
+                        const figId = figureCounter++;
+                        const img = document.createElement('div');
+                        img.className = "w-full bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl aspect-video flex flex-col items-center justify-center text-gray-400 relative overflow-hidden";
+
+                        // Icon based on type
+                        let icon = "🖼️";
+                        if (type === 'diag-arch') icon = "🏗️";
+                        if (type === 'diag-flow') icon = "🧬";
+                        if (type === 'diag-er') icon = "🗄️";
+                        if (type === 'diag-seq') icon = "⏱️";
+                        if (type === 'diag-ui') icon = "📱";
+
+                        img.innerHTML = `
+                            <div class="text-4xl mb-2 opacity-50">${icon}</div>
+                            <div class="text-xs font-bold uppercase tracking-widest">${TYPE_MAP[type]} 占位符</div>
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent"></div>
+                        `;
+
+                        const caption = document.createElement('div');
+                        caption.className = "font-bold text-sm text-gray-800";
+                        caption.innerText = `图 3-${figId}：${customCaption || TYPE_MAP[type]}`;
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(caption);
+                    } else if (type === 'table-standard') {
+                        // Table
+                        const tblId = tableCounter++;
+                        const caption = document.createElement('div');
+                        caption.className = "font-bold text-sm text-gray-800 mb-2";
+                        caption.innerText = `表 3-${tblId}：${customCaption || '统计表'}`;
+
+                        const table = document.createElement('div');
+                        table.className = "w-full overflow-hidden border rounded-lg shadow-sm";
+                        table.innerHTML = `<table class="w-full text-sm">
+                            <thead class="bg-gray-50"><tr><th class="p-2 border-b text-left">测试用例</th><th class="p-2 border-b text-left">输入</th><th class="p-2 border-b text-left">预期结果</th></tr></thead>
+                            <tbody><tr class="bg-white"><td class="p-2 border-b">TC01</td><td class="p-2 border-b">Correct PW</td><td class="p-2 border-b text-green-600">Success</td></tr><tr class="bg-gray-50"><td class="p-2">TC02</td><td class="p-2">Wrong PW</td><td class="p-2 text-red-600">Denied</td></tr></tbody>
+                        </table>`;
+
+                        wrapper.appendChild(caption);
+                        wrapper.appendChild(table);
+                    }
+                    previewBody.appendChild(wrapper);
+                });
+            });
+        }
+
+        // Add Chapter functions
+        function showAddChapterModal() {
+            document.getElementById('add-chapter-ui').classList.remove('hidden');
+            document.getElementById('new-chapter-name').focus();
+        }
+
+        function hideAddChapterModal() {
+            document.getElementById('add-chapter-ui').classList.add('hidden');
+            document.getElementById('new-chapter-name').value = '';
+        }
+
+        function addChapter() {
+            const name = document.getElementById('new-chapter-name').value.trim();
+            if (!name) return;
+
+            chapterCount++;
+            const id = `ch-${Date.now()}`;
+
+            // Add to skeleton list
+            const section = document.createElement('div');
+            section.className = "skeleton-section";
+            section.dataset.id = id;
+            section.dataset.chapter = name;
+            section.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-bold text-gray-900 leading-none">第${chapterCount}章 ${name}</span>
+                </div>
+                <div class="drop-zone min-h-[60px] border border-dashed border-gray-300 rounded-lg flex items-center justify-center text-xs text-gray-400 bg-gray-50 transition-all p-2 flex-col space-y-2">
+                    <div class="empty-placeholder italic pointer-events-none">拖动组件到此处</div>
+                </div>
+            `;
+            document.getElementById('skeleton-list').appendChild(section);
+            initSortable(section.querySelector('.drop-zone'));
+
+            // Add to preview container
+            const preview = document.createElement('div');
+            preview.id = `preview-${id}`;
+            preview.className = "preview-section";
+            preview.innerHTML = `
+                <h2 class="text-xl font-bold border-b pb-2 mb-4">第${chapterCount}章 ${name}</h2>
+                <div class="preview-body space-y-4">
+                    <div class="opacity-30 italic text-sm text-gray-400">暂无内容，请从左侧拖入组件</div>
+                </div>
+            `;
+            document.getElementById('preview-container').appendChild(preview);
+
+            hideAddChapterModal();
+        }
+    </script>
+</body>
+
+</html>
+
+</body>
+
+</html>
